@@ -12,6 +12,7 @@ async function serpapi(params: Record<string, string>): Promise<unknown> {
   for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value)
   url.searchParams.set('api_key', env().SERPAPI_API_KEY)
 
+  console.info('SerpApi 호출:', params.engine)
   const res = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(30_000) })
   const body = (await res.json().catch(() => null)) as { error?: string } | null
   if (!res.ok || !body || body.error) throw new Error(`SerpApi: ${body?.error ?? `HTTP ${res.status}`}`)

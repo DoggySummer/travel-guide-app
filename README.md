@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# travel-guide-app
 
-## Getting Started
+모바일에서 여행 조건을 단계별로 입력하면 AI가 항공·숙소 실제 가격 후보와 일자별 일정, 총예산을 만들어주는 개인용 웹 앱.
 
-First, run the development server:
+- 설계: `docs/superpowers/specs/2026-11-25-travel-guide-app-design.md`
+- 구현 계획: `docs/superpowers/plans/2026-11-25-travel-guide-app-mvp.md`
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 스택
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · Claude API (`claude-opus-5-5`) · SerpApi (Google Flights/Hotels) · Google Maps / Places API (New) · Supabase · Vercel
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 로컬 실행
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. `npm install`
+2. `cp .env.example .env.local` 후 값 채우기 (각 항목 설명은 `.env.example`)
+3. Supabase SQL Editor에서 `supabase/migrations/20261125000000_init.sql` 실행
+4. `npm run dev` → http://localhost:3000
 
-## Learn More
+API 비용 없이 화면만 보려면 `.env.local`에서 `MOCK_EXTERNAL=1`.
 
-To learn more about Next.js, take a look at the following resources:
+## 명령어
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| 명령 | 설명 |
+|---|---|
+| `npm run dev` | 개발 서버 |
+| `npm test` | Vitest 단위 테스트 |
+| `npm run typecheck` | 타입 검사 |
+| `npm run lint` | ESLint |
+| `npm run build` | 프로덕션 빌드 |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 배포 (Vercel)
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Vercel에서 GitHub 저장소 `travel-guide-app` 연결
+2. Settings → Environment Variables에 `.env.example`의 모든 항목 등록 (`MOCK_EXTERNAL=0`)
+3. Google Cloud에서 브라우저용 Maps 키의 웹사이트 제한에 Vercel 도메인 추가
+4. 배포 후 휴대폰 브라우저로 접속 → 공유 → 홈 화면에 추가

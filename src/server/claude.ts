@@ -16,6 +16,8 @@ import { GENERATE_SYSTEM, REVISE_SYSTEM, buildGenerateMessage, buildReviseMessag
 
 const PLAN_MODEL = 'claude-opus-5-5'
 const LIGHT_MODEL = 'claude-haiku-5-5'
+// 비스트리밍 요청에서 32000은 SDK가 "Streaming is required"로 거부한다(예상 소요 10분 초과). 계획의 대안대로 16000을 쓴다.
+const PLAN_MAX_TOKENS = 16000
 const IATA = /^[A-Z]{3}$/
 
 /** 응답이 거절·잘림·형식 오류일 때. 파이프라인이 1회 재시도한다. */
@@ -40,7 +42,7 @@ export async function generateItinerary(input: PlanInput, offers: Offers): Promi
   if (isMock()) return mockItinerary(input, offers)
   const response = await anthropic().messages.parse({
     model: PLAN_MODEL,
-    max_tokens: 32000,
+    max_tokens: PLAN_MAX_TOKENS,
     thinking: { type: 'adaptive' },
     output_config: { effort: 'high', format: zodOutputFormat(AiItinerarySchema) },
     system: GENERATE_SYSTEM,
@@ -55,7 +57,7 @@ export async function reviseItinerary(args: ReviseArgs): Promise<AiRevision> {
   if (isMock()) return mockRevision(args)
   const response = await anthropic().messages.parse({
     model: PLAN_MODEL,
-    max_tokens: 32000,
+    max_tokens: PLAN_MAX_TOKENS,
     thinking: { type: 'adaptive' },
     output_config: { effort: 'high', format: zodOutputFormat(AiRevisionSchema) },
     system: REVISE_SYSTEM,
