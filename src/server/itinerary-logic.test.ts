@@ -147,6 +147,22 @@ describe('수정 후 처리', () => {
     expect(names).toContain('신천지')
   })
 
+  describe.each([
+    ['동방명주 야경 늘리고 신천지는 빼줘', '동방명주', '신천지'],
+    ['동방명주는 빼지 말아줘', '동방명주', null],
+    ['일정이 빼곡해서 동방명주 시간을 줄여줘', '동방명주', null],
+    ['동방명주는 빼지마, 신천지는 삭제해줘', '동방명주', '신천지'],
+  ])('protectMustVisit 문장 단위 제거 판단: %s', (message, kept, removed) => {
+    test('제거 요청이 걸린 장소만 되살리지 않는다', () => {
+      const before = prev()
+      const next = finalizeItinerary(ai({ days: [{ date: '2026-12-18', theme: '푸동', items: [] }] }), reviseCtx())
+      const names = protectMustVisit(before, next, message).days.flatMap((d) => d.items).map((i) => i.placeName)
+      expect(names.some((n) => n.includes(kept))).toBe(true)
+      if (removed) expect(names.some((n) => n.includes(removed))).toBe(false)
+      else expect(names.some((n) => n.includes('신천지'))).toBe(true)
+    })
+  })
+
   test('inheritPlaces: 같은 이름 항목은 id와 place를 물려받고, 새 항목만 확인 대상이 된다', () => {
     const before = prev()
     const pearl = before.days[0].items.find((i) => i.placeName.includes('동방명주'))!

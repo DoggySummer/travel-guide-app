@@ -4,7 +4,10 @@ import type { AiItem, AiItinerary, Day, Item, Itinerary, Offers, PlaceInfo, Plan
 
 export type FinalizeContext = { input: PlanInput; offers: Offers; makeId: () => string }
 
-const REMOVE_WORDS = ['빼', '삭제', '제외', '안갈', '지워', '없애']
+// 공백을 뺀 절에서 찾는 제거 표현. 맨 '빼'만으로는 '빼곡' 같은 말과 구분이 안 되어 활용형으로만 찾는다.
+const REMOVE_EXPRESSIONS = ['빼줘', '빼주', '빼고', '빼자', '삭제', '제외', '지워', '없애', '안갈']
+// 제거하지 말라는 뜻의 표현. 제거 표현보다 먼저 확인한다.
+const NEGATED_REMOVE_EXPRESSIONS = ['빼지마', '빼지말', '삭제하지마', '삭제하지말', '제외하지마', '제외하지말', '지우지마', '없애지마']
 
 function normalizeTime(raw: string): string {
   const m = raw.trim().match(/^(\d{1,2}):(\d{2})$/)
@@ -126,10 +129,25 @@ function nameVariants(placeName: string): string[] {
   return [placeName, outer, ...inner].filter(Boolean)
 }
 
+/**
+ * 메시지를 절로 나눈다. 쉼표·마침표·줄바꿈, '그리고(는)', 그리고 '-고 ' 연결어미(예: "늘리고 ") 뒤에서 끊는다.
+ * '-고'는 앞 절에 남겨서 "신천지 빼고 ..."의 '빼고'가 그 절에서 보이게 한다.
+ */
+function splitClauses(message: string): string[] {
+  return message
+    .split(/[,.，。\n]+|그리고는?|(?<=고)\s+/)
+    .map((c) => c.replace(/\s+/g, ''))
+    .filter(Boolean)
+}
+
 function userAskedToRemove(placeName: string, userMessage: string): boolean {
-  const msg = normalizeName(userMessage)
-  const mentioned = nameVariants(placeName).some((v) => msg.includes(normalizeName(v)))
-  return mentioned && REMOVE_WORDS.some((w) => msg.includes(w))
+  const variants = nameVariants(placeName).map(normalizeName)
+  return splitClauses(userMessage).some((clause) => {
+    const text = normalizeName(clause)
+    if (!variants.some((v) => v && text.includes(v))) return false
+    if (NEGATED_REMOVE_EXPRESSIONS.some((w) => clause.includes(w))) return false
+    return REMOVE_EXPRESSIONS.some((w) => clause.includes(w))
+  })
 }
 
 export function protectMustVisit(prev: Itinerary, next: Itinerary, userMessage: string): Itinerary {
