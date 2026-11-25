@@ -1,6 +1,6 @@
 import { tripDates } from '@/lib/dates'
 import { formatDateRange, formatKrw } from '@/lib/format'
-import { parseKrw } from '../draft'
+import { parseKrw, toPlanInput } from '../draft'
 import { Question, type StepProps } from '../StepFrame'
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -13,6 +13,8 @@ function Row({ label, value }: { label: string; value: string }) {
 }
 
 export function ConfirmStep({ draft, error }: Pick<StepProps, 'draft'> & { error: string | null }) {
+  const validity = toPlanInput(draft)
+  const message = error ?? (validity.ok ? null : validity.message)
   const days = tripDates(draft.startDate, draft.endDate).length
   const flight =
     draft.flightMode === 'none'
@@ -49,9 +51,9 @@ export function ConfirmStep({ draft, error }: Pick<StepProps, 'draft'> & { error
           </div>
         ))}
       </div>
-      {error && (
+      {message && (
         <p role="alert" className="mt-3 text-content text-body">
-          {error}
+          {message}
         </p>
       )}
     </>

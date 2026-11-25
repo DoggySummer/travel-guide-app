@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { EMPTY_DRAFT, type WizardDraft } from './draft'
+import { EMPTY_DRAFT, applyDraftPatch, type WizardDraft } from './draft'
 
 const KEY = 'tga:wizard'
 type State = { step: number; draft: WizardDraft }
@@ -31,7 +31,8 @@ export function useWizardDraft() {
   }, [state])
 
   const update = useCallback(
-    (patch: Partial<WizardDraft>) => setState((s) => ({ ...s, draft: { ...s.draft, ...patch } })),
+    (patch: Partial<WizardDraft> | ((d: WizardDraft) => Partial<WizardDraft>)) =>
+      setState((s) => ({ ...s, draft: applyDraftPatch(s.draft, typeof patch === 'function' ? patch(s.draft) : patch) })),
     [],
   )
   const goTo = useCallback((step: number) => setState((s) => ({ ...s, step })), [])

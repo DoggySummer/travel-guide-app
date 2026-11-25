@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { EMPTY_DRAFT, canProceed, parseKrw, toPlanInput, type WizardDraft } from './draft'
+import { EMPTY_DRAFT, applyDraftPatch, canProceed, parseKrw, toPlanInput, type WizardDraft } from './draft'
 
 const filled: WizardDraft = {
   ...EMPTY_DRAFT,
@@ -82,5 +82,47 @@ describe('toPlanInput', () => {
 
   test('필수 값이 없으면 실패한다', () => {
     expect(toPlanInput(EMPTY_DRAFT).ok).toBe(false)
+  })
+})
+
+describe('applyDraftPatch', () => {
+  const guessed: WizardDraft = { ...filled, departureId: 'ICN', arrivalId: 'PVG' }
+
+  test('목적지가 바뀌면 공항 코드를 비운다', () => {
+    const next = applyDraftPatch(guessed, { destination: '오사카' })
+    expect(next.destination).toBe('오사카')
+    expect(next.departureId).toBe('')
+    expect(next.arrivalId).toBe('')
+  })
+
+  test('목적지가 같은 값이면 공항 코드를 유지한다', () => {
+    const next = applyDraftPatch(guessed, { destination: guessed.destination })
+    expect(next.departureId).toBe('ICN')
+    expect(next.arrivalId).toBe('PVG')
+  })
+
+  test('상관없는 변경에는 공항 코드를 유지한다', () => {
+    const next = applyDraftPatch(guessed, { notes: '메모' })
+    expect(next.departureId).toBe('ICN')
+    expect(next.arrivalId).toBe('PVG')
+  })
+
+  test('출발지가 바뀌면 공항 코드를 비운다', () => {
+    const next = applyDraftPatch(guessed, { origin: '부산' })
+    expect(next.departureId).toBe('')
+    expect(next.arrivalId).toBe('')
+  })
+})
+
+describe('toPlanInput 메시지', () => {
+  test('예약 항공편 편명이 비면 항공편 안내를 준다', () => {
+    const result = toPlanInput({ ...filled, flightMode: 'booked' })
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.message).toContain('항공편')
+  })
+
+  test('귀국일이 빠르면 스키마 메시지를 그대로 준다', () => {
+    const result = toPlanInput({ ...filled, endDate: '2026-12-17' })
+    expect(result).toEqual({ ok: false, message: '귀국일이 출발일보다 빨라요.' })
   })
 })

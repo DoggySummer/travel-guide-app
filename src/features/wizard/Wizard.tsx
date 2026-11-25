@@ -46,10 +46,15 @@ export default function Wizard() {
   const current = STEPS[index]
   const isLast = current.id === 'confirm'
 
-  const back = () => (index === 0 ? router.push('/') : goTo(index - 1))
+  const back = () => {
+    setError(null)
+    if (index === 0) router.push('/')
+    else goTo(index - 1)
+  }
 
   const next = async () => {
     if (!isLast) {
+      setError(null)
       goTo(index + 1)
       return
     }

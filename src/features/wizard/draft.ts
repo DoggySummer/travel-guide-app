@@ -121,6 +121,38 @@ export function canProceed(step: StepId, d: WizardDraft): boolean {
   }
 }
 
+const FIELD_LABEL: Record<string, string> = {
+  destination: '목적지',
+  startDate: '날짜',
+  endDate: '날짜',
+  origin: '출발지',
+  adults: '인원',
+  children: '인원',
+  companion: '동행',
+  styles: '여행 스타일',
+  mustVisit: '꼭 가고 싶은 곳',
+  pace: '강도·예산',
+  budget: '강도·예산',
+  transport: '교통수단',
+  flight: '항공편',
+  stay: '숙소',
+  notes: '추가 요청',
+}
+
+function issueMessage(issue: { code: string; message: string; path: PropertyKey[] } | undefined): string {
+  if (issue?.code === 'custom') return issue.message
+  const label = FIELD_LABEL[String(issue?.path[0])]
+  return label ? `${label} 입력을 다시 확인해주세요.` : '입력을 다시 확인해주세요.'
+}
+
+export function applyDraftPatch(draft: WizardDraft, patch: Partial<WizardDraft>): WizardDraft {
+  const next = { ...draft, ...patch }
+  const changed =
+    (patch.destination !== undefined && patch.destination !== draft.destination) ||
+    (patch.origin !== undefined && patch.origin !== draft.origin)
+  return changed ? { ...next, departureId: '', arrivalId: '' } : next
+}
+
 export function toPlanInput(d: WizardDraft): { ok: true; input: PlanInput } | { ok: false; message: string } {
   const flight =
     d.flightMode === 'search'
@@ -156,6 +188,6 @@ export function toPlanInput(d: WizardDraft): { ok: true; input: PlanInput } | { 
     stay,
     notes: d.notes,
   })
-  if (!result.success) return { ok: false, message: '입력을 다시 확인해주세요.' }
+  if (!result.success) return { ok: false, message: issueMessage(result.error.issues[0]) }
   return { ok: true, input: result.data }
 }

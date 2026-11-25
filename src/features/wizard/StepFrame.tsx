@@ -1,6 +1,6 @@
 import type { WizardDraft } from './draft'
 
-export type StepProps = { draft: WizardDraft; update: (patch: Partial<WizardDraft>) => void }
+export type StepProps = { draft: WizardDraft; update: (patch: Partial<WizardDraft> | ((d: WizardDraft) => Partial<WizardDraft>)) => void }
 
 export const INPUT_CLASS =
   'min-h-12 w-full rounded-card border border-hairline bg-surface px-3 text-field text-ink placeholder:text-placeholder focus:border-ink focus:outline-none'

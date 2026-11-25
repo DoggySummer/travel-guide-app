@@ -19,7 +19,7 @@ export function FlightStep({ draft, update }: StepProps) {
           method: 'POST',
           body: JSON.stringify({ origin: draft.origin, destination: draft.destination }),
         })
-        update({ departureId: res.departureId, arrivalId: res.arrivalId })
+        update((d) => ({ departureId: d.departureId || res.departureId, arrivalId: d.arrivalId || res.arrivalId }))
         setGuessState('idle')
       } catch {
         setGuessState('failed')
