@@ -54,7 +54,7 @@ export function PlanView({ id }: { id: string }) {
   }
 
   const { plan } = data
-  if (plan.status === 'generating') return <GeneratingView plan={plan} />
+  if (plan.status === 'generating') return <GeneratingView plan={plan} error={error} onRetry={reload} />
   if (plan.status === 'failed' || !plan.itinerary) return <FailedView plan={plan} onRetried={reload} />
 
   const itinerary = plan.itinerary

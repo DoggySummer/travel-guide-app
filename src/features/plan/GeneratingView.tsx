@@ -26,7 +26,7 @@ function Header({ plan }: { plan: PlanDto }) {
   )
 }
 
-export function GeneratingView({ plan }: { plan: PlanDto }) {
+export function GeneratingView({ plan, error, onRetry }: { plan: PlanDto; error?: string | null; onRetry?: () => void }) {
   const current = Math.max(0, PROGRESS.findIndex((s) => s.id === plan.progressStep))
   return (
     <main className="px-4 py-3">
@@ -47,7 +47,20 @@ export function GeneratingView({ plan }: { plan: PlanDto }) {
           </li>
         ))}
       </ol>
-      <p className="mt-4 text-content text-muted">보통 1~2분 걸려요. 이 화면을 닫아도 계속 만들어져요.</p>
+      {error ? (
+        <>
+          <p role="alert" className="mt-4 text-content text-body">
+            {error}
+          </p>
+          {onRetry && (
+            <Button onClick={onRetry} className="mt-4">
+              다시 시도
+            </Button>
+          )}
+        </>
+      ) : (
+        <p className="mt-4 text-content text-muted">보통 1~2분 걸려요. 이 화면을 닫아도 계속 만들어져요.</p>
+      )}
     </main>
   )
 }
@@ -63,6 +76,7 @@ export function FailedView({ plan, onRetried }: { plan: PlanDto; onRetried: () =
       onRetried()
     } catch (e) {
       setError(e instanceof Error ? e.message : '다시 시도하지 못했어요.')
+    } finally {
       setPending(false)
     }
   }
