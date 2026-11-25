@@ -6,6 +6,7 @@ import { ErrorState } from '@/components/ErrorState'
 import { formatDateRange } from '@/lib/format'
 import { BudgetTab } from './BudgetTab'
 import { FailedView, GeneratingView } from './GeneratingView'
+import { MapTab } from './MapTab'
 import { ScheduleTab } from './ScheduleTab'
 import { usePlan } from './usePlan'
 
@@ -74,7 +75,7 @@ export function PlanView({ id }: { id: string }) {
 
       <div className="mt-3">
         {tab === 'schedule' && <ScheduleTab itinerary={itinerary} dayIndex={safeDay} onDayChange={setDayIndex} />}
-        {tab === 'map' && <p className="px-4 text-content text-muted">지도는 다음 작업에서 붙여요.</p>}
+        {tab === 'map' && <MapTab itinerary={itinerary} dayIndex={safeDay} onDayChange={setDayIndex} />}
         {tab === 'budget' && <BudgetTab plan={plan} itinerary={itinerary} />}
       </div>
 
