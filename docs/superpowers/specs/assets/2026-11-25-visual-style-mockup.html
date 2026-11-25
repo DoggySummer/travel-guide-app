@@ -1,0 +1,116 @@
+<style>
+  @font-face{font-family:'Paperlogy';src:url('/files/Paperlogy-4Regular.ttf') format('truetype');font-weight:400}
+  @font-face{font-family:'Paperlogy';src:url('/files/Paperlogy-6SemiBold.ttf') format('truetype');font-weight:600}
+  @font-face{font-family:'Paperlogy';src:url('/files/Paperlogy-7Bold.ttf') format('truetype');font-weight:700}
+  .g{--canvas:#fdfbf7;--surface:#fffdfa;--hair:#ece6dc;--div:#f2eee6;--ink:#2b2a26;--body:#48453e;--muted:#aba391;--ph:#c4bca9;--chip:#f5f1ea;--chipfg:#8a8271;
+     width:300px;height:620px;margin:0 auto;border-radius:34px;overflow:hidden;position:relative;border:8px solid #1d1d1b;
+     background:var(--canvas);color:var(--body);font-family:'Paperlogy',-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:14px;line-height:1.6}
+  .g *{box-sizing:border-box}
+  .g .pad{padding:26px 16px 0}
+  .g .lbl{font-size:10px;font-weight:600;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+  .g .h1{font-size:20px;font-weight:700;letter-spacing:-.01em;color:var(--ink);margin:2px 0 0}
+  .g .meta{font-size:12px;color:var(--muted);margin-top:2px}
+  .g .seg{display:flex;gap:6px;margin:14px 0 10px;overflow:hidden}
+  .g .seg span{flex:none;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:var(--chip);color:var(--chipfg)}
+  .g .seg span.on{background:var(--ink);color:var(--canvas)}
+  .g .list{border:1px solid var(--hair);border-radius:10px;background:var(--surface);overflow:hidden}
+  .g .li{display:flex;align-items:center;gap:8px;padding:11px 12px}
+  .g .li+.li{border-top:1px solid var(--div)}
+  .g .tm{width:36px;flex:none;font-size:12px;font-weight:600;color:var(--ink)}
+  .g .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--body)}
+  .g .tag{flex:none;padding:1px 8px;border-radius:999px;font-size:10px;font-weight:600}
+  .g .sub2{font-size:11px;color:var(--muted);padding:0 12px 10px 56px;margin-top:-8px}
+  .t-land{background:#e4e0f2;color:#5b4e8c}.t-food{background:#fbe3d6;color:#b0664a}.t-stay{background:#efe9da;color:#8a7a4e}
+  .t-move{background:#dde7f2;color:#4a6e96}.t-shop{background:#f7dfe6;color:#a85273}.t-nat{background:#ddebe0;color:#4a7c5e}
+  .g .tabbar{position:absolute;left:0;right:0;bottom:0;display:flex;border-top:1px solid var(--hair);background:var(--surface)}
+  .g .tabbar span{flex:1;text-align:center;padding:12px 0 16px;font-size:10px;font-weight:600;letter-spacing:.14em;color:var(--muted)}
+  .g .tabbar span.on{color:var(--ink)}
+  .g .ask{position:absolute;left:16px;right:16px;bottom:58px;display:flex;gap:8px;align-items:center}
+  .g .ask .in{flex:1;border:1px solid var(--hair);background:var(--surface);border-radius:10px;padding:9px 12px;font-size:13px;color:var(--ph)}
+  .g .ask .go{width:38px;height:38px;border-radius:999px;background:var(--ink);color:var(--canvas);display:flex;align-items:center;justify-content:center;font-size:15px}
+  .g .row{display:flex;justify-content:space-between;align-items:baseline}
+  .g .amt{font-size:28px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+  .g .bar{display:flex;height:8px;border-radius:999px;overflow:hidden;margin:10px 0 14px;background:var(--chip)}
+  .g .card{border:1px solid var(--hair);border-radius:10px;background:var(--surface);padding:12px;margin-top:10px}
+  .g .card .t{font-weight:600;color:var(--ink)}
+  .g .card .s{font-size:11px;color:var(--muted)}
+  .g .link{font-size:11px;font-weight:600;color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+  .g .dots{display:flex;gap:4px;margin-bottom:22px}
+  .g .dots i{width:6px;height:6px;border-radius:99px;background:var(--hair)}
+  .g .dots i.on{background:var(--ink);width:16px}
+  .g .q{font-size:22px;font-weight:700;color:var(--ink);line-height:1.35;letter-spacing:-.01em}
+  .g .opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .g .opts span{padding:8px 14px;border-radius:999px;border:1px solid var(--hair);background:var(--surface);font-size:13px;color:var(--body)}
+  .g .opts span.on{background:var(--ink);border-color:var(--ink);color:var(--canvas);font-weight:600}
+  .g .cta{position:absolute;left:16px;right:16px;bottom:22px;height:48px;border-radius:10px;background:var(--ink);color:var(--canvas);display:flex;align-items:center;justify-content:center;font-weight:600}
+  .g .skip{position:absolute;left:0;right:0;bottom:78px;text-align:center;font-size:12px;color:var(--muted)}
+  .wrap3{display:flex;gap:26px;flex-wrap:wrap;justify-content:center;margin-top:22px}
+  .wrap3 .cap{text-align:center;font-size:13px;margin-top:10px;opacity:.8}
+</style>
+
+<h2>gagyebu_2 스타일을 적용한 여행 앱</h2>
+<p class="subtitle">gagyebu_2의 토큰(Paperlogy 폰트, 헤어라인 보더, 10px 모서리, 파스텔 태그, 자간 넓은 작은 라벨, 먹색 버튼)을 그대로 가져왔어요. 그림자, 그라디언트, 강조색은 쓰지 않았어요.</p>
+
+<div class="wrap3">
+  <div>
+    <div class="g">
+      <div class="pad">
+        <div class="dots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="lbl">4 / 9 · 여행 스타일</div>
+        <div class="q" style="margin-top:6px">이번 여행에서<br>무엇을 하고 싶나요?</div>
+        <div class="meta" style="margin-top:6px">여러 개 고를 수 있어요</div>
+        <div class="opts">
+          <span class="on">맛집</span><span>관광명소</span><span class="on">쇼핑</span><span>자연</span><span>휴양</span><span class="on">야경</span><span>액티비티</span><span>문화·역사</span>
+        </div>
+      </div>
+      <div class="skip">건너뛰기</div>
+      <div class="cta">다음</div>
+    </div>
+    <div class="cap">위저드 한 단계</div>
+  </div>
+
+  <div>
+    <div class="g">
+      <div class="pad">
+        <div class="lbl">Osaka · 12.18 – 12.21</div>
+        <div class="h1">오사카 먹방 여행</div>
+        <div class="seg"><span class="on">1일차</span><span>2일차</span><span>3일차</span><span>4일차</span></div>
+        <div class="list">
+          <div class="li"><span class="tm">11:40</span><span class="nm">간사이공항 도착 · KE723</span><span class="tag t-move">이동</span></div>
+          <div class="li"><span class="tm">13:00</span><span class="nm">호텔 한큐 레스파이어</span><span class="tag t-stay">숙소</span></div>
+          <div class="li"><span class="tm">13:30</span><span class="nm">이치란 도톤보리점</span><span class="tag t-food">음식점</span></div>
+          <div class="li"><span class="tm">15:00</span><span class="nm">구로몬 시장</span><span class="tag t-food">음식점</span></div>
+          <div class="li"><span class="tm">17:00</span><span class="nm">신사이바시 쇼핑거리</span><span class="tag t-shop">쇼핑</span></div>
+          <div class="li"><span class="tm">19:00</span><span class="nm">도톤보리 야경</span><span class="tag t-land">랜드마크</span></div>
+        </div>
+      </div>
+      <div class="ask"><div class="in">일정 수정 요청하기</div><div class="go">↑</div></div>
+      <div class="tabbar"><span class="on">일정</span><span>지도</span><span>예산</span></div>
+    </div>
+    <div class="cap">결과 · 일정 탭</div>
+  </div>
+
+  <div>
+    <div class="g">
+      <div class="pad">
+        <div class="lbl">예상 총비용 · 2명</div>
+        <div class="row"><span class="amt">1,482,000원</span></div>
+        <div class="bar"><span style="width:38%;background:#4a6e96"></span><span style="width:34%;background:#8a7a4e"></span><span style="width:20%;background:#b0664a"></span><span style="width:8%;background:#4a7c5e"></span></div>
+        <div class="list">
+          <div class="li"><span class="tag t-move">항공</span><span class="nm">왕복 2인</span><span class="tm" style="width:auto">562,000원</span></div>
+          <div class="li"><span class="tag t-stay">숙박</span><span class="nm">3박</span><span class="tm" style="width:auto">504,000원</span></div>
+          <div class="li"><span class="tag t-food">식비</span><span class="nm">예상</span><span class="tm" style="width:auto">296,000원</span></div>
+          <div class="li"><span class="tag t-nat">교통</span><span class="nm">현지 예상</span><span class="tm" style="width:auto">120,000원</span></div>
+        </div>
+        <div class="lbl" style="margin-top:18px">추천 항공편</div>
+        <div class="card">
+          <div class="row"><span class="t">대한항공 KE723</span><span class="t">281,000원</span></div>
+          <div class="s">ICN 09:55 → KIX 11:40 · 직항 1시간 45분</div>
+          <div style="margin-top:6px"><span class="link">Google Flights에서 보기</span></div>
+        </div>
+      </div>
+      <div class="tabbar"><span>일정</span><span>지도</span><span class="on">예산</span></div>
+    </div>
+    <div class="cap">결과 · 예산 탭</div>
+  </div>
+</div>
