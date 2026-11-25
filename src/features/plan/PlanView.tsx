@@ -7,6 +7,7 @@ import { formatDateRange } from '@/lib/format'
 import { BudgetTab } from './BudgetTab'
 import { FailedView, GeneratingView } from './GeneratingView'
 import { MapTab } from './MapTab'
+import { Revise } from './Revise'
 import { ScheduleTab } from './ScheduleTab'
 import { usePlan } from './usePlan'
 
@@ -42,7 +43,7 @@ function TabBar({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
 }
 
 export function PlanView({ id }: { id: string }) {
-  const { data, error, reload } = usePlan(id)
+  const { data, error, reload, setData } = usePlan(id)
   const [tab, setTab] = useState<Tab>('schedule')
   const [dayIndex, setDayIndex] = useState(0)
 
@@ -78,6 +79,20 @@ export function PlanView({ id }: { id: string }) {
         {tab === 'map' && <MapTab itinerary={itinerary} dayIndex={safeDay} onDayChange={setDayIndex} />}
         {tab === 'budget' && <BudgetTab plan={plan} itinerary={itinerary} />}
       </div>
+
+      {tab !== 'budget' && (
+        <Revise
+          planId={plan.id}
+          messages={data.messages}
+          bottomOffset={TAB_BAR_HEIGHT}
+          onRevised={(next, newMessages) =>
+            setData((d) =>
+              d ? { plan: { ...d.plan, itinerary: next, title: next.title }, messages: [...d.messages, ...newMessages] } : d,
+            )
+          }
+          onFailed={reload}
+        />
+      )}
 
       <TabBar tab={tab} onChange={setTab} />
     </div>
