@@ -42,9 +42,9 @@ async function attachPlaces(itinerary: Itinerary, destination: string): Promise<
 }
 
 export async function runGeneration(planId: string): Promise<void> {
-  const plan = await getPlan(planId)
-  if (!plan) return
   try {
+    const plan = await getPlan(planId)
+    if (!plan) return
     let offers = plan.offers
     if (!offers) {
       await updatePlan(planId, { progressStep: 'offers' })
@@ -102,7 +102,12 @@ export async function runRevision(
   } catch (e) {
     console.error('runRevision 실패', planId, e)
     const text = userMessage(e).replace('일정을 만드는', '일정을 고치는')
-    const assistantMsg = await insertMessage(planId, 'assistant', text)
-    throw Object.assign(new RevisionError(text, 502), { messages: [userMsg, assistantMsg] })
+    const messages = [userMsg]
+    try {
+      messages.push(await insertMessage(planId, 'assistant', text))
+    } catch (insertError) {
+      console.error('안내 메시지 저장 실패', planId, insertError)
+    }
+    throw Object.assign(new RevisionError(text, 502), { messages })
   }
 }
