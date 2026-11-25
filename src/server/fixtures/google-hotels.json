@@ -1,0 +1,29 @@
+{
+  "search_metadata": { "google_hotels_url": "https://www.google.com/travel/hotels?q=osaka" },
+  "properties": [
+    {
+      "name": "호텔 한큐 레스파이어 오사카",
+      "gps_coordinates": { "latitude": 34.7055, "longitude": 135.4983 },
+      "overall_rating": 4.4,
+      "total_rate": { "extracted_lowest": 504000 },
+      "link": "https://example.com/hankyu"
+    },
+    {
+      "name": "난바 비즈니스 호텔",
+      "gps_coordinates": { "latitude": 34.6659, "longitude": 135.5013 },
+      "overall_rating": 3.8,
+      "total_rate": { "extracted_lowest": 270000 }
+    },
+    {
+      "name": "콘래드 오사카",
+      "gps_coordinates": { "latitude": 34.6931, "longitude": 135.4930 },
+      "overall_rating": 4.7,
+      "total_rate": { "extracted_lowest": 1620000 },
+      "link": "https://example.com/conrad"
+    },
+    {
+      "name": "가격 없는 료칸",
+      "overall_rating": 4.9
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "search_metadata": { "google_flights_url": "https://www.google.com/travel/flights?hl=ko&q=ICN-KIX" },
+  "best_flights": [
+    {
+      "flights": [
+        {
+          "departure_airport": { "id": "ICN", "time": "2026-12-18 09:55" },
+          "arrival_airport": { "id": "KIX", "time": "2026-12-18 11:40" },
+          "airline": "대한항공",
+          "flight_number": "KE 723"
+        }
+      ],
+      "total_duration": 105,
+      "price": 562000
+    }
+  ],
+  "other_flights": [
+    {
+      "flights": [
+        {
+          "departure_airport": { "id": "ICN", "time": "2026-12-18 07:10" },
+          "arrival_airport": { "id": "KIX", "time": "2026-12-18 09:00" },
+          "airline": "제주항공",
+          "flight_number": "7C 1302"
+        }
+      ],
+      "total_duration": 110,
+      "price": 398000
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": { "id": "ICN", "time": "2026-12-18 13:00" },
+          "arrival_airport": { "id": "NRT", "time": "2026-12-18 15:20" },
+          "airline": "ANA",
+          "flight_number": "NH 862"
+        },
+        {
+          "departure_airport": { "id": "NRT", "time": "2026-12-18 17:00" },
+          "arrival_airport": { "id": "KIX", "time": "2026-12-18 18:20" },
+          "airline": "ANA",
+          "flight_number": "NH 2177"
+        }
+      ],
+      "total_duration": 320,
+      "price": 690000
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": { "id": "ICN", "time": "2026-12-18 20:00" },
+          "arrival_airport": { "id": "KIX", "time": "2026-12-18 21:45" },
+          "airline": "가격없음항공",
+          "flight_number": "XX 1"
+        }
+      ],
+      "total_duration": 105
+    }
+  ]
+}
