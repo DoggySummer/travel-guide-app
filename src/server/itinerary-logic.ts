@@ -157,7 +157,20 @@ export function protectMustVisit(prev: Itinerary, next: Itinerary, userMessage: 
   for (const prevDay of prev.days) {
     for (const item of prevDay.items) {
       if (!item.mustVisit) continue
-      if (nextItems.some((i) => nameMatches(i.placeName, item.placeName))) continue
+      const kept = nextItems.filter((i) => nameMatches(i.placeName, item.placeName))
+      if (kept.length > 0) {
+        // AI가 남겼지만 mustVisit 플래그를 잃었다면 되돌린다 (제거 요청이 있었다면 AI의 값을 따른다)
+        if (!userAskedToRemove(item.placeName, userMessage)) {
+          for (const k of kept) {
+            if (k.mustVisit) continue
+            for (const d of days) {
+              const di = d.items.indexOf(k)
+              if (di >= 0) d.items[di] = { ...k, mustVisit: true }
+            }
+          }
+        }
+        continue
+      }
       if (userAskedToRemove(item.placeName, userMessage)) continue
       const target = days.find((d) => d.date === prevDay.date) ?? days[days.length - 1]
       if (!target) continue

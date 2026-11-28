@@ -8,12 +8,13 @@ vi.mock('./db', () => ({
 }))
 vi.mock('./claude', () => {
   class ClaudeOutputError extends Error {}
-  return { ClaudeOutputError, generateItinerary: vi.fn(), reviseItinerary: vi.fn() }
+  class ClaudeTruncatedError extends ClaudeOutputError {}
+  return { ClaudeOutputError, ClaudeTruncatedError, generateItinerary: vi.fn(), reviseItinerary: vi.fn() }
 })
 vi.mock('./serpapi', () => ({ fetchOffers: vi.fn() }))
 vi.mock('./places', () => ({ verifyPlaces: vi.fn() }))
 
-import { reviseItinerary } from './claude'
+import { ClaudeOutputError, ClaudeTruncatedError, generateItinerary, reviseItinerary } from './claude'
 import { getPlan, insertMessage, listMessages, updatePlan } from './db'
 import { RevisionError, runGeneration, runRevision } from './pipeline'
 
@@ -30,6 +31,28 @@ describe('runGeneration', () => {
 
     await expect(runGeneration('p1')).resolves.toBeUndefined()
     expect(updatePlan).toHaveBeenCalledWith('p1', expect.objectContaining({ status: 'failed', progressStep: null }))
+  })
+})
+
+describe('runGeneration 재시도', () => {
+  const plan = { offers: { flights: [], hotels: [] }, input: { destination: '오사카', mustVisit: [] } }
+  beforeEach(() => {
+    vi.mocked(getPlan).mockResolvedValue(plan as never)
+    vi.mocked(updatePlan).mockResolvedValue(undefined)
+  })
+
+  test('max_tokens 잘림 오류는 재시도하지 않고 failed로 기록한다', async () => {
+    vi.mocked(generateItinerary).mockRejectedValue(new ClaudeTruncatedError('일정이 너무 길어서 중간에 끊겼어요.'))
+    await runGeneration('p1')
+    expect(generateItinerary).toHaveBeenCalledTimes(1)
+    expect(updatePlan).toHaveBeenCalledWith('p1', expect.objectContaining({ status: 'failed', error: '일정이 너무 길어서 중간에 끊겼어요.' }))
+  })
+
+  test('일반 ClaudeOutputError는 1회 재시도한다', async () => {
+    vi.mocked(generateItinerary).mockRejectedValue(new ClaudeOutputError('형식 오류'))
+    await runGeneration('p1')
+    expect(generateItinerary).toHaveBeenCalledTimes(2)
+    expect(updatePlan).toHaveBeenCalledWith('p1', expect.objectContaining({ status: 'failed' }))
   })
 })
 

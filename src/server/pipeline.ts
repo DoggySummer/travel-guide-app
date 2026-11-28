@@ -2,14 +2,14 @@ import 'server-only'
 import { randomUUID } from 'node:crypto'
 import Anthropic from '@anthropic-ai/sdk'
 import type { Itinerary, MessageDto } from '@/lib/schema'
-import { ClaudeOutputError, generateItinerary, reviseItinerary } from './claude'
+import { ClaudeOutputError, ClaudeTruncatedError, generateItinerary, reviseItinerary } from './claude'
 import { getPlan, insertMessage, listMessages, updatePlan } from './db'
 import { applyPlaces, finalizeItinerary, inheritPlaces, itemsNeedingPlaces, protectMustVisit } from './itinerary-logic'
 import { verifyPlaces } from './places'
 import { fetchOffers } from './serpapi'
 
-/** generating 상태가 이 시간 넘게 갱신되지 않으면 멈춘 것으로 본다. */
-export const STALE_MS = 10 * 60 * 1000
+/** generating 상태가 이 시간 넘게 갱신되지 않으면 멈춘 것으로 본다. 라우트 maxDuration(300초)보다 길되 여유는 짧게(6분). */
+export const STALE_MS = 6 * 60 * 1000
 
 export class RevisionError extends Error {
   constructor(
@@ -24,7 +24,7 @@ async function withOneRetry<T>(fn: () => Promise<T>): Promise<T> {
   try {
     return await fn()
   } catch (e) {
-    if (!(e instanceof ClaudeOutputError)) throw e
+    if (!(e instanceof ClaudeOutputError) || e instanceof ClaudeTruncatedError) throw e
     console.warn('Claude 출력 오류, 1회 재시도:', e.message)
     return fn()
   }

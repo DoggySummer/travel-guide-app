@@ -23,6 +23,9 @@ const IATA = /^[A-Z]{3}$/
 /** 응답이 거절·잘림·형식 오류일 때. 파이프라인이 1회 재시도한다. */
 export class ClaudeOutputError extends Error {}
 
+/** max_tokens로 응답이 잘렸을 때. 같은 요청을 다시 보내도 또 잘리므로 재시도하지 않는다. */
+export class ClaudeTruncatedError extends ClaudeOutputError {}
+
 let client: Anthropic | null = null
 function anthropic(): Anthropic {
   if (!client) client = new Anthropic({ apiKey: env().ANTHROPIC_API_KEY, maxRetries: 3 })
@@ -34,7 +37,7 @@ function checkStop(stopReason: string | null): void {
     throw new ClaudeOutputError('AI가 이 요청을 처리하지 않았어요. 요청 내용을 바꿔서 다시 시도해주세요.')
   }
   if (stopReason === 'max_tokens') {
-    throw new ClaudeOutputError('일정이 너무 길어서 중간에 끊겼어요. 다시 시도해주세요.')
+    throw new ClaudeTruncatedError('일정이 너무 길어서 중간에 끊겼어요. 다시 시도해주세요.')
   }
 }
 

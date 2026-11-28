@@ -138,6 +138,35 @@ describe('수정 후 처리', () => {
     expect(restored.days[1].items.some((i) => i.placeName === '신천지')).toBe(true)
   })
 
+  const keptPearl = (mustVisit: boolean) =>
+    finalizeItinerary(
+      ai({
+        days: [
+          {
+            date: '2026-12-18',
+            theme: '푸동',
+            items: [{ time: '19:00', placeName: 'Oriental Pearl Tower (동방명주)', category: '랜드마크', description: '', estCostKrw: 0, mustVisit }],
+          },
+          { date: '2026-12-19', theme: '신천지', items: [{ time: '10:00', placeName: '신천지', category: '랜드마크', description: '', estCostKrw: 0, mustVisit: true }] },
+        ],
+      }),
+      reviseCtx(),
+    )
+
+  test('protectMustVisit: AI가 mustVisit을 false로 돌려줘도 유지된 지정 장소는 true로 되돌린다', () => {
+    const result = protectMustVisit(prev(), keptPearl(false), '첫날 줄여줘')
+    const pearl = result.days.flatMap((d) => d.items).find((i) => i.placeName.includes('동방명주'))!
+    expect(pearl.mustVisit).toBe(true)
+  })
+
+  test('protectMustVisit: 제거 요청이 있었는데 AI가 남겼다면 AI의 값을 그대로 둔다', () => {
+    const next = keptPearl(false)
+    const result = protectMustVisit(prev(), next, '동방명주는 빼줘')
+    const pearl = result.days.flatMap((d) => d.items).find((i) => i.placeName.includes('동방명주'))!
+    expect(pearl.mustVisit).toBe(false)
+    expect(next.days[0].items[0].mustVisit).toBe(false)
+  })
+
   test('protectMustVisit: 사용자가 그 장소를 빼달라고 하면 되살리지 않는다', () => {
     const before = prev()
     const next = finalizeItinerary(ai({ days: [{ date: '2026-12-18', theme: '푸동', items: [] }] }), reviseCtx())
