@@ -169,20 +169,19 @@ export function protectMustVisit(prev: Itinerary, next: Itinerary, userMessage: 
 }
 
 export function inheritPlaces(prev: Itinerary, next: Itinerary): Itinerary {
-  const known = new Map<string, Item>()
+  // 같은 장소가 여러 번 나올 수 있으므로(예: 첫날 체크인·마지막 날 체크아웃 숙소) 이름별로 기존 항목을 순서대로 하나씩 물려준다.
+  const known = new Map<string, Item[]>()
   for (const item of prev.days.flatMap((d) => d.items)) {
     const key = normalizeName(item.placeName)
-    if (!known.has(key)) known.set(key, item)
+    known.set(key, [...(known.get(key) ?? []), item])
   }
-  const used = new Set<string>()
   return {
     ...next,
     days: next.days.map((day) => ({
       ...day,
       items: day.items.map((item) => {
-        const match = known.get(normalizeName(item.placeName))
-        if (!match || used.has(match.id)) return item
-        used.add(match.id)
+        const match = known.get(normalizeName(item.placeName))?.shift()
+        if (!match) return item
         return { ...item, id: match.id, place: match.place }
       }),
     })),

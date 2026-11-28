@@ -189,6 +189,38 @@ describe('수정 후 처리', () => {
     expect(itemsNeedingPlaces(merged).map((q) => q.placeName)).toEqual(['와이탄 야경'])
   })
 
+  test('inheritPlaces: 같은 장소가 여러 번 나오면 각 항목이 순서대로 기존 id와 place를 물려받는다', () => {
+    const before = finalizeItinerary(
+      ai({
+        days: [
+          { date: '2026-12-18', theme: '첫날', items: [{ time: '16:00', placeName: 'Homeinn Selected', category: '숙소', description: '체크인', estCostKrw: 0, mustVisit: false }] },
+          { date: '2026-12-19', theme: '둘째 날', items: [{ time: '09:00', placeName: 'Homeinn Selected', category: '숙소', description: '체크아웃', estCostKrw: 0, mustVisit: false }] },
+        ],
+      }),
+      ctx,
+    )
+    const withPlaces: Itinerary = {
+      ...before,
+      days: before.days.map((d) => ({
+        ...d,
+        items: d.items.map((i) => ({ ...i, place: { status: 'verified' as const, lat: 31.23, lng: 121.48 } })),
+      })),
+    }
+    const next = finalizeItinerary(
+      ai({
+        days: [
+          { date: '2026-12-18', theme: '첫날', items: [{ time: '16:00', placeName: 'Homeinn Selected', category: '숙소', description: '체크인', estCostKrw: 0, mustVisit: false }] },
+          { date: '2026-12-19', theme: '둘째 날', items: [{ time: '09:00', placeName: 'Homeinn Selected', category: '숙소', description: '체크아웃', estCostKrw: 0, mustVisit: false }] },
+        ],
+      }),
+      reviseCtx(),
+    )
+    const merged = inheritPlaces(withPlaces, next)
+    const ids = (it: Itinerary) => it.days.flatMap((d) => d.items).filter((i) => i.placeName === 'Homeinn Selected').map((i) => i.id)
+    expect(ids(merged)).toEqual(ids(withPlaces))
+    expect(itemsNeedingPlaces(merged)).toEqual([])
+  })
+
   test('applyPlaces는 key(id)에 맞는 항목에만 place를 붙인다', () => {
     const it = finalizeItinerary(ai(), ctx)
     const first = it.days[0].items[0]
